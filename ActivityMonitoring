@@ -1,0 +1,40 @@
+#!/bin/bash
+
+#Config SQL/PTT GPIO Pin
+SQL=22
+PTT=26
+
+sleep 300
+while true;
+do
+ c=300
+ #Loop for Show Display
+ xset -display :0 s reset
+ xset -display :0 s noblank
+ xset -display :0 s 0
+ #Loop for check Activity
+ while [[ "$c" -gt "1" ]];
+ do
+  sleep 0.1
+  s1=`gpio read $SQL`
+  s2=`gpio read $PTT`
+  if [[ "$s1" != "1" && "$s2" != "1" ]];
+   then c=$c-1
+   else c=300
+  fi
+ done
+ #Turn Off Display
+ xset -display :0 s blank
+ xset -display :0 s reset
+ xset -display :0 s 30
+ xset -display :0 s activate
+ s1=`gpio read $SQL`
+ s2=`gpio read $PTT`
+ #Loop for check Activity
+ while [[ "$s1" != "1" && "$s2" != "1" ]];
+ do
+  sleep 1
+  s1=`gpio read $SQL`
+  s2=`gpio read $PTT`
+ done
+done
